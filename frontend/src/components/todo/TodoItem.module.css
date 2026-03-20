@@ -1,0 +1,148 @@
+.item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px 16px 16px 0;
+  border-radius: var(--radius-lg);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: box-shadow var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.item:hover {
+  border-color: var(--border-base);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.done {
+  opacity: 0.55;
+}
+
+/* Left priority stripe */
+.priorityStripe {
+  width: 4px;
+  flex-shrink: 0;
+  align-self: stretch;
+  background: var(--stripe);
+  border-radius: 0 4px 4px 0;
+  margin-right: 2px;
+}
+
+/* Checkbox */
+.checkbox {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  border: 2px solid var(--checkbox-bg);
+  background: transparent;
+  cursor: pointer;
+  flex-shrink: 0;
+  margin-top: 1px;
+  position: relative;
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+
+.checkbox::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  background: transparent;
+  transition: background var(--transition-fast);
+}
+
+.checked {
+  border-color: var(--checkbox-checked-bg);
+  background: var(--checkbox-checked-bg);
+}
+
+.checked::after {
+  /* Checkmark via clip-path */
+  background: #fff;
+  clip-path: polygon(20% 50%, 42% 72%, 80% 28%, 86% 34%, 42% 84%, 14% 56%);
+  inset: 2px;
+  border-radius: 0;
+}
+
+/* Content */
+.content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.title {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-primary);
+  line-height: 1.4;
+}
+
+.done .title {
+  text-decoration: line-through;
+  color: var(--text-tertiary);
+}
+
+.desc {
+  font-size: 13px;
+  color: var(--text-tertiary);
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  margin-top: 2px;
+}
+
+.recurIcon {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 11px;
+  color: var(--text-tertiary);
+  font-weight: 500;
+}
+
+/* Actions */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.item:hover .actions { opacity: 1; }
+
+.actionBtn {
+  width: 28px; height: 28px;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: transparent;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.actionBtn:hover {
+  background: rgba(255,59,48,.1);
+  color: var(--color-red);
+}
+
+.chevron {
+  color: var(--text-tertiary);
+  flex-shrink: 0;
+}

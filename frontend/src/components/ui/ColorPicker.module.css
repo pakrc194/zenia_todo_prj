@@ -1,0 +1,19 @@
+.grid {
+  display: flex; flex-wrap: wrap; gap: 8px;
+}
+
+.swatch {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--c);
+  border: 2px solid transparent;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: transform var(--transition-fast), border-color var(--transition-fast);
+}
+
+.swatch:hover { transform: scale(1.15); }
+
+.swatch.active {
+  border-color: var(--text-primary);
+  box-shadow: 0 0 0 2px var(--bg-surface), 0 0 0 4px var(--c);
+}

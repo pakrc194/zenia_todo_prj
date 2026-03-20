@@ -1,0 +1,64 @@
+.shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+/* Side nav */
+.nav {
+  width: 60px;
+  flex-shrink: 0;
+  background: var(--bg-surface);
+  border-right: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 14px 10px;
+  position: sticky;
+  top: 60px;
+  height: calc(100vh - 60px);
+}
+
+.navItem {
+  width: 40px; height: 40px;
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  color: var(--text-tertiary);
+  text-decoration: none;
+  font-size: 10px;
+  font-weight: 500;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.navItem span {
+  font-size: 9px;
+  line-height: 1;
+}
+
+.navItem:hover {
+  background: var(--bg-hover);
+  color: var(--text-secondary);
+}
+
+.navItemActive {
+  background: var(--accent-subtle) !important;
+  color: var(--accent) !important;
+}
+
+.content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
