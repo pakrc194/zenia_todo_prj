@@ -1,5 +1,6 @@
 package com.example.todo.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,12 @@ public class TodoService {
 	
 	public List<TodoResponse> getTodos() {
 		List<Todo> todos = todoRepo.findAll();
+		
+		return todos.stream().map(TodoResponse::from).toList(); 
+	}
+	
+	public List<TodoResponse> findByDateTodos(LocalDate date) {
+		List<Todo> todos = todoRepo.findByDateWithRecurrences(date);
 		
 		return todos.stream().map(TodoResponse::from).toList(); 
 	}

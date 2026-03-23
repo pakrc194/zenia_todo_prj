@@ -127,6 +127,148 @@
   margin-top: 4px;
 }
 
+/* 반복 종료일 행 */
+.endDateRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 12px 14px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-base);
+  border-radius: var(--radius-md);
+  animation: slideDown 160ms ease;
+}
+
+.endDateLeft {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 80px;
+}
+
+.endDateLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.endDateSub {
+  font-size: 11px;
+  color: var(--text-tertiary);
+}
+
+.endDateRight {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.endDateInput {
+  width: 160px;
+  padding: 8px 10px;
+  font-size: 13px;
+}
+
+.clearEndDate {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: none;
+  background: var(--bg-hover);
+  color: var(--text-tertiary);
+  cursor: pointer;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--transition-fast), color var(--transition-fast);
+  flex-shrink: 0;
+}
+.clearEndDate:hover {
+  background: rgba(255,59,48,.12);
+  color: var(--color-red);
+}
+
+.inputError {
+  border-color: var(--color-red) !important;
+  box-shadow: 0 0 0 3px rgba(255,59,48,.12) !important;
+}
+
+/* Weekday picker (매주 반복 요일 선택) */
+.weekdayPicker {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 14px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-base);
+  border-radius: var(--radius-md);
+  animation: slideDown 160ms ease;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.weekdayHint {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  font-weight: 500;
+}
+
+.weekdayGrid {
+  display: flex;
+  gap: 6px;
+}
+
+.weekdayBtn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border-base);
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  font-family: var(--font-base);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.weekdayBtn:hover:not(.weekdayBtnActive) {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-subtle);
+}
+
+.weekdayBtnActive {
+  background: var(--accent) !important;
+  border-color: var(--accent) !important;
+  color: #fff !important;
+}
+
+.weekdaySelected {
+  font-size: 12px;
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.weekdayWarn {
+  font-size: 12px;
+  color: var(--color-red);
+  font-weight: 500;
+}
+
 /* Footer */
 .footer {
   display: flex;

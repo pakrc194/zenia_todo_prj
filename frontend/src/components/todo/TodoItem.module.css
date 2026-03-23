@@ -22,6 +22,14 @@
   opacity: 0.55;
 }
 
+.recurring {
+  background: color-mix(in srgb, var(--accent) 4%, var(--bg-surface));
+}
+
+.recurring .priorityStripe {
+  opacity: 0.5;
+}
+
 /* Left priority stripe */
 .priorityStripe {
   width: 4px;
@@ -112,6 +120,18 @@
   font-size: 11px;
   color: var(--text-tertiary);
   font-weight: 500;
+}
+
+.endDateBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 7px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-base);
+  background: var(--bg-input);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-tertiary);
 }
 
 /* Actions */

@@ -56,6 +56,38 @@
   color: var(--accent) !important;
 }
 
+/* Pushes chat button to bottom */
+.navSpacer {
+  flex: 1;
+}
+
+/* Chat nav button (not a NavLink) */
+.navBtn {
+  border: none;
+  cursor: pointer;
+  background: transparent;
+  font-family: var(--font-base);
+  position: relative;
+}
+
+/* Green dot on chat icon */
+.chatDot {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-green, #34C759);
+  border: 1.5px solid var(--bg-surface);
+  animation: chatPulse 2.4s ease-in-out infinite;
+}
+
+@keyframes chatPulse {
+  0%, 100% { transform: scale(1);   opacity: 1; }
+  50%       { transform: scale(1.4); opacity: 0.6; }
+}
+
 .content {
   flex: 1;
   min-width: 0;
