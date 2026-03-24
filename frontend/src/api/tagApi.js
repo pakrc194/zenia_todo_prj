@@ -10,12 +10,12 @@
 
 import api from '@/lib/axios'
 
-const BASE = '/tags'
+const BASE = '/tag'
 
 // ── 전체 조회 ─────────────────────────────────────────────
 /** @returns {Promise<Tag[]>} */
 export const getTags = () =>
-  api.get(BASE).then(r => r.data)
+  api.get(`${BASE}/list`).then(r => r.data)
 
 // ── 단건 조회 ─────────────────────────────────────────────
 /** @param {number} id */
@@ -28,7 +28,7 @@ export const getTag = (id) =>
  * @returns {Promise<Tag>}
  */
 export const createTag = (payload) =>
-  api.post(BASE, payload).then(r => r.data)
+  api.post(`${BASE}`, payload).then(r => r.data)
 
 // ── 수정 ──────────────────────────────────────────────────
 /**

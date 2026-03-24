@@ -2,40 +2,66 @@ package com.example.todo.dto;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
+import com.example.todo.entity.Category;
+import com.example.todo.entity.Priority;
+import com.example.todo.entity.Recurrence;
+import com.example.todo.entity.Tag;
 import com.example.todo.entity.Todo;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
 @Builder
-public class TodoResponse {
+@NoArgsConstructor
+public class TodoDto {
 	Long id;
 	String title, description, priority;
 	boolean isDone;
 	LocalDate dueDate;
 	RecurrenceDto recurrence;
-	LocalDateTime created_at;
-	int category_id;
+	LocalDateTime createdAt;
+	CategoryDto category;
+	List<Tag> tags;
+	
+	Long categoryId;
+	List<Long> tagIds; 
 	
 	
-	public static TodoResponse from(Todo todo) {
-		return TodoResponse.builder()
+	public static TodoDto from(Todo todo) {
+		return TodoDto.builder()
 		.id(todo.getId())
 		.title(todo.getTitle())
 		.description(todo.getDescription())
 		.priority(todo.getPriority().toString())
 		.isDone(todo.isDone())
 		.dueDate(todo.getDueDate())
-		.recurrence(todo.getRecurrences()!=null?
-				RecurrenceDto.from(todo.getRecurrences()) :null)
+		.recurrence(todo.getRecurrence()!=null?
+				RecurrenceDto.from(todo.getRecurrence()) :null)
 		.createdAt(todo.getCreatedAt())
-		.categoryId(todo.getCategoryId())
+		.category(todo.getCategory()!=null?CategoryDto.from(todo.getCategory()):null)
+		.tags(todo.getTags())
 		.build();
 		
 		
+	}
+	
+	public Todo toEntity(Category category) {
+		return Todo.builder()
+				.title(this.title)
+				.description(this.description)
+				.priority(Priority.valueOf(this.priority))
+				.isDone(false)
+				.dueDate(this.dueDate)
+				.recurrence(this.recurrence.toEntity())
+				.createdAt(this.createdAt)
+				.category(category)
+				
+				.build();
 	}
 }

@@ -17,18 +17,17 @@ const BASE = '/todo'
 // ── 전체 조회 ─────────────────────────────────────────────
 /**
  * @param {object} [params]
- * @param {string} [params.due_date]     'YYYY-MM-DD'
- * @param {number} [params.category_id]
+ * @param {string} [params.dueDate]     'YYYY-MM-DD'
+ * @param {number} [params.categoryId]
  * @param {string} [params.priority]     'high' | 'medium' | 'low'
- * @param {boolean}[params.is_done]
- * @param {number}[params.recurrence_id]
+ * @param {boolean}[params.isDone]
  * @param {string} [params.search]       제목/설명 검색
  * @param {number} [params.page]         페이지 번호 (1-based)
  * @param {number} [params.per_page]     페이지당 개수 (기본 20)
  * @returns {Promise<{ data: Todo[], total: number, page: number, per_page: number }>}
  */
 export const getTodos = (params = {}) =>
-  api.get(`${BASE}/list`, { params }).then(r => r.data)
+  api.get(`${BASE}/month`, { params }).then(r => r.data)
 
 // ── 단건 조회 ─────────────────────────────────────────────
 /**
@@ -76,11 +75,11 @@ export const patchTodo = (id, payload) =>
 // ── 완료 토글 전용 PATCH ──────────────────────────────────
 /**
  * @param {number}  id
- * @param {boolean} is_done
+ * @param {boolean} isDone
  * @returns {Promise<Todo>}
  */
-export const toggleTodoDone = (id, is_done) =>
-  api.patch(`${BASE}/${id}/done`, { is_done }).then(r => r.data)
+export const toggleTodoDone = (id, isDone) =>
+  api.patch(`${BASE}/${id}/done`, { isDone }).then(r => r.data).then(r => r.data)
 
 // ── 삭제 ──────────────────────────────────────────────────
 /**

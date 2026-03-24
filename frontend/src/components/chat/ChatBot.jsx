@@ -22,22 +22,22 @@ const INITIAL_MESSAGE = {
  */
 function buildContext(state) {
   const today      = state.selectedDate
-  const todayTodos = state.todos.filter(t => t.due_date === today)
-  const allPending = state.todos.filter(t => !t.is_done)
+  const todayTodos = state.todos.filter(t => t.dueDate === today)
+  const allPending = state.todos.filter(t => !t.isDone)
 
   const fmt = (t) => {
-    const cat  = state.categories.find(c => c.id === t.category_id)
+    const cat  = state.categories.find(c => c.id === t.categoryId)
     // todo_tags 조인 테이블에서 태그 조회
-    const tagIds = state.todoTags.filter(tt => tt.todo_id === t.id).map(tt => tt.tag_id)
-    const tags   = state.tags.filter(tg => tagIds.includes(tg.id)).map(tg => tg.name)
+    const tags = t.tags ?? []
+    
     const priorityLabel = { high: '높음', medium: '중간', low: '낮음' }[t.priority] ?? t.priority
     return (
-      `- [${t.is_done ? '완료' : '미완료'}] ${t.title}` +
+      `- [${t.isDone ? '완료' : '미완료'}] ${t.title}` +
       (t.description ? ` (${t.description})` : '') +
       ` | 우선순위: ${priorityLabel}` +
       (cat  ? ` | 카테고리: ${cat.name}` : '') +
       (tags.length ? ` | 태그: ${tags.join(', ')}` : '') +
-      (t.due_date ? ` | 날짜: ${t.due_date}` : '')
+      (t.dueDate ? ` | 날짜: ${t.dueDate}` : '')
     )
   }
 
@@ -95,14 +95,15 @@ export function ChatBot({ isOpen, onClose }) {
        *   3. 필요 시 응답 필터링
        *
        * 백엔드 예시 (Express):
-       *   POST /ai/groq
+       *   POST /api/chat/completions
        *   body: { system: string, messages: { role, content }[] }
        *   → Anthropic SDK로 호출 후 { content: string } 반환
        */
-      const { data } = await api.get('/ai/groq', {
-        param : {
-            message : new Date()
-        }
+      console.log(userMsg.content)
+      const { data } = await api.post('/ai/groq', {
+        
+          message: userMsg.content
+        
       })
 
       setMessages(prev => [...prev, { role: 'assistant', content: data }])

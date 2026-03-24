@@ -33,11 +33,11 @@ export const RECURRENCE_TYPES = [
 // DAYS OF WEEK (for weekly recurrence)
 // ============================================================
 export const DAYS_OF_WEEK = [
-  { value: 'MON', label: '월' },
-  { value: 'TUE', label: '화' },
-  { value: 'WED', label: '수' },
-  { value: 'THU', label: '목' },
-  { value: 'FRI', label: '금' },
-  { value: 'SAT', label: '토' },
-  { value: 'SUN', label: '일' },
+  { value: '1', label: '월' },
+  { value: '2', label: '화' },
+  { value: '3', label: '수' },
+  { value: '4', label: '목' },
+  { value: '5', label: '금' },
+  { value: '6', label: '토' },
+  { value: '7', label: '일' },
 ]

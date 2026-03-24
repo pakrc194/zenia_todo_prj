@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTodo } from '@/context/TodoContext'
 import { useModal } from '@/hooks/useModal'
 import { Modal } from '@/components/ui/Modal'
@@ -8,6 +8,7 @@ import { ColorPicker } from '@/components/ui/ColorPicker'
 import { Trash2, Plus } from 'lucide-react'
 import { TAG_COLORS } from '@/lib/constants'
 import styles from './TagsPage.module.css'
+import { useCategoryApi, useTagApi } from '../hooks/useTodoApi'
 
 function TagModal({ isOpen, onClose, type, dispatch, categories }) {
   const [name, setName] = useState('')
@@ -15,12 +16,32 @@ function TagModal({ isOpen, onClose, type, dispatch, categories }) {
 
   const reset = () => { setName(''); setColor(TAG_COLORS[0].hex) }
 
+  const {addTag} = useTagApi()
+  const {addCategory} = useCategoryApi()
   const submit = () => {
+    
     if (!name.trim()) return
-    dispatch({ type: type === 'tag' ? 'ADD_TAG' : 'ADD_CATEGORY', payload: { name: name.trim(), color, created_at: new Date().toISOString() } })
+    const req = { type: type === 'tag' ? 'ADD_TAG' : 'ADD_CATEGORY', payload: { name: name.trim(), color, createdAt: new Date().toISOString() } }
+    console.log(req)
+    if(req.type ==="tag") {
+      addTag(req.payload)
+    } else {
+      addCategory(req.payload)
+    }
+    
     reset()
     onClose()
   }
+
+  const {fetchTags, loadingMap:loadingTagMap} = useTagApi()
+  const {fetchCategories, loadingMap:loadingCateMap} = useCategoryApi()
+  
+  useEffect(()=>{
+    fetchTags().then(res=>console.log("tag",res))
+    fetchCategories().then(res=>console.log("category",res))
+  },[])
+
+  if(loadingTagMap.fetchTags || loadingCateMap.fetchCategories) return <>로딩중입니다..</>
 
   return (
     <Modal isOpen={isOpen} onClose={() => { reset(); onClose() }} title={type === 'tag' ? '새 태그' : '새 카테고리'} size="sm">
@@ -50,12 +71,16 @@ function TagModal({ isOpen, onClose, type, dispatch, categories }) {
 
 export default function TagsPage() {
   const { state, dispatch } = useTodo()
+  
   const tagModal = useModal()
   const catModal = useModal()
   const [modalType, setModalType] = useState('tag')
 
   const openTag = () => { setModalType('tag'); tagModal.open() }
   const openCat = () => { setModalType('cat'); catModal.open() }
+
+  const {removeCategory} = useCategoryApi()
+  const {removeTag} = useTagApi()
 
   return (
     <div className={styles.page}>
@@ -68,13 +93,13 @@ export default function TagsPage() {
           <Button size="sm" onClick={openCat}><Plus size={14} /> 추가</Button>
         </div>
         <div className={styles.grid}>
-          {state.categories.map(c => (
-            <div key={c.id} className={styles.card}>
+          {state.categories.map((c,k) => (
+            <div key={k} className={styles.card}>
               <span className={styles.cardDot} style={{ background: c.color }} />
               <span className={styles.cardName}>{c.name}</span>
               <button
                 className={styles.deleteBtn}
-                onClick={() => dispatch({ type: 'DELETE_CATEGORY', payload: c.id })}
+                onClick={() => removeCategory(c.id)}
                 aria-label="삭제"
               >
                 <Trash2 size={13} />
@@ -91,12 +116,12 @@ export default function TagsPage() {
           <Button size="sm" onClick={openTag}><Plus size={14} /> 추가</Button>
         </div>
         <div className={styles.badgeWrap}>
-          {state.tags.map(t => (
-            <div key={t.id} className={styles.tagRow}>
+          {state.tags.map((t,k) => (
+            <div key={k} className={styles.tagRow}>
               <Badge label={t.name} color={t.color} />
               <button
                 className={styles.deleteBtn}
-                onClick={() => dispatch({ type: 'DELETE_TAG', payload: t.id })}
+                onClick={() => removeTag(t.id)}
                 aria-label="삭제"
               >
                 <Trash2 size={13} />

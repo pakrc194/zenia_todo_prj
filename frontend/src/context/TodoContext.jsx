@@ -1,20 +1,16 @@
-import { createContext, useContext, useReducer, useMemo, useEffect } from 'react'
-import { mockTodos, mockCategories, mockTags, mockRecurrences, mockTodoTags } from '@/lib/mockData'
+import { createContext, useContext, useReducer, useMemo } from 'react'
+import { mockTodos, mockCategories, mockTags } from '@/lib/mockData'
 
 const TodoContext = createContext(null)
 
-
+// todos 안에 category, recurrence, tags 객체가 이미 조인되어 있음
+// todoTags, recurrence 별도 state 제거
 const initialState = {
-  todos:        mockTodos,
-  categories:   mockCategories,
-  tags:         mockTags,
-  recurrences:  mockRecurrences,
-  // todo_tags 조인 테이블: { todo_id, tag_id }[]
-  // todos.tags[] 배열 제거 후 태그 관계의 유일한 출처
-  todoTags:     mockTodoTags,
-  // 반복 인스턴스 날짜별 완료 상태: { '${todoId}_${date}': boolean }
-  completions:  {},
-  selectedDate: new Date().toISOString().split('T')[0],
+  todos:       mockTodos,
+  categories:  mockCategories,  // 폼 선택 목록 전용
+  tags:        mockTags,        // 폼 선택 목록 전용
+  completions: {},              // 반복 인스턴스 날짜별 완료 { `${todoId}_${date}`: bool }
+  selectedDate:     new Date().toISOString().split('T')[0],
   filterCategoryId: null,
   filterTagId:      null,
   filterPriority:   null,
@@ -28,14 +24,14 @@ function reducer(state, action) {
       return { ...state, todos: action.payload }
 
     case 'ADD_TODO':
-      return { ...state, todos: [...state.todos, { id: Date.now(), ...action.payload }] }
+      return { ...state, todos: [...state.todos, action.payload] }
 
     case 'UPDATE_TODO':
       return {
         ...state,
         todos: state.todos.map(t =>
           t.id === action.payload.id
-            ? { ...t, ...action.payload, updated_at: new Date().toISOString() }
+            ? { ...t, ...action.payload, updatedAt: new Date().toISOString() }
             : t
         ),
       }
@@ -44,8 +40,6 @@ function reducer(state, action) {
       return {
         ...state,
         todos: state.todos.filter(t => t.id !== action.payload),
-        // 연관된 todo_tags 행 같이 삭제
-        todoTags: state.todoTags.filter(tt => tt.todo_id !== action.payload),
         completions: Object.fromEntries(
           Object.entries(state.completions).filter(([k]) => !k.startsWith(`${action.payload}_`))
         ),
@@ -55,30 +49,24 @@ function reducer(state, action) {
       return {
         ...state,
         todos: state.todos.map(t =>
-          t.id === action.payload ? { ...t, is_done: !t.is_done } : t
+          t.id === action.payload ? { ...t, isDone: !t.isDone } : t
         ),
       }
 
     case 'TOGGLE_RECURRING_DONE':
       return {
         ...state,
-        completions: { ...state.completions, [action.payload]: !state.completions[action.payload] },
+        completions: {
+          ...state.completions,
+          [action.payload]: !state.completions[action.payload],
+        },
       }
 
-    // ── todo_tags (태그 관계) ──────────────────────────────
-    // todo_tags 전체 교체: 특정 todo의 태그를 새 목록으로 덮어씀
-    case 'SET_TODO_TAGS': {
-      const { todoId, tagIds } = action.payload
-      const filtered = state.todoTags.filter(tt => tt.todo_id !== todoId)
-      const added    = tagIds.map(tagId => ({ todo_id: todoId, tag_id: tagId }))
-      return { ...state, todoTags: [...filtered, ...added] }
-    }
-
-    // ── categories ─────────────────────────────────────────
+    // ── categories (폼 선택 목록) ──────────────────────────
     case 'SET_CATEGORIES':
       return { ...state, categories: action.payload }
     case 'ADD_CATEGORY':
-      return { ...state, categories: [...state.categories, { id: Date.now(), ...action.payload }] }
+      return { ...state, categories: [...state.categories, action.payload] }
     case 'UPDATE_CATEGORY':
       return {
         ...state,
@@ -89,11 +77,11 @@ function reducer(state, action) {
     case 'DELETE_CATEGORY':
       return { ...state, categories: state.categories.filter(c => c.id !== action.payload) }
 
-    // ── tags ───────────────────────────────────────────────
+    // ── tags (폼 선택 목록) ────────────────────────────────
     case 'SET_TAGS':
       return { ...state, tags: action.payload }
     case 'ADD_TAG':
-      return { ...state, tags: [...state.tags, { id: Date.now(), ...action.payload }] }
+      return { ...state, tags: [...state.tags, action.payload] }
     case 'UPDATE_TAG':
       return {
         ...state,
@@ -102,25 +90,9 @@ function reducer(state, action) {
         ),
       }
     case 'DELETE_TAG':
-      return {
-        ...state,
-        tags: state.tags.filter(t => t.id !== action.payload),
-        // 연관된 todo_tags 행 같이 삭제
-        todoTags: state.todoTags.filter(tt => tt.tag_id !== action.payload),
-      }
+      return { ...state, tags: state.tags.filter(t => t.id !== action.payload) }
 
-    // ── recurrences ────────────────────────────────────────
-    case 'ADD_RECURRENCE':
-      return { ...state, recurrences: [...state.recurrences, action.payload] }
-    case 'UPDATE_RECURRENCE':
-      return {
-        ...state,
-        recurrences: state.recurrences.map(r =>
-          r.id === action.payload.id ? { ...r, ...action.payload } : r
-        ),
-      }
-
-    // ── filters & selection ────────────────────────────────
+    // ── filters ────────────────────────────────────────────
     case 'SET_SELECTED_DATE':
       return { ...state, selectedDate: action.payload }
     case 'SET_FILTER_CATEGORY':
@@ -132,7 +104,13 @@ function reducer(state, action) {
     case 'SET_SEARCH':
       return { ...state, searchQuery: action.payload }
     case 'CLEAR_FILTERS':
-      return { ...state, filterCategoryId: null, filterTagId: null, filterPriority: null, searchQuery: '' }
+      return {
+        ...state,
+        filterCategoryId: null,
+        filterTagId:      null,
+        filterPriority:   null,
+        searchQuery:      '',
+      }
 
     default:
       return state
@@ -142,23 +120,12 @@ function reducer(state, action) {
 export function TodoProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState)
 
-  // todo_id → tag id 배열 조회 헬퍼 (컴포넌트에서 todo.tags 대신 사용)
-  const getTagIds = useMemo(() => (todoId) =>
-    state.todoTags
-      .filter(tt => tt.todo_id === todoId)
-      .map(tt => tt.tag_id),
-    [state.todoTags]
-  )
-
   const filteredTodos = useMemo(() =>
     state.todos.filter(todo => {
-      if (todo.recurrence_id) return false
-      if (todo.due_date !== state.selectedDate) return false
-      if (state.filterCategoryId && todo.category_id !== state.filterCategoryId) return false
-      if (state.filterTagId) {
-        const tagIds = state.todoTags.filter(tt => tt.todo_id === todo.id).map(tt => tt.tag_id)
-        if (!tagIds.includes(state.filterTagId)) return false
-      }
+      if (todo.recurrence) return false   // 반복 todo는 useRecurringTodos에서 처리
+      if (todo.dueDate !== state.selectedDate) return false
+      if (state.filterCategoryId && todo.category?.id !== state.filterCategoryId) return false
+      if (state.filterTagId && !todo.tags?.some(t => t.id === state.filterTagId)) return false
       if (state.filterPriority && todo.priority !== state.filterPriority) return false
       if (state.searchQuery) {
         const q = state.searchQuery.toLowerCase()
@@ -167,17 +134,17 @@ export function TodoProvider({ children }) {
       }
       return true
     }),
-    [state.todos, state.todoTags, state.selectedDate, state.filterCategoryId,
+    [state.todos, state.selectedDate, state.filterCategoryId,
      state.filterTagId, state.filterPriority, state.searchQuery],
   )
 
   const datesWithTodos = useMemo(
-    () => [...new Set(state.todos.filter(t => !t.recurrence_id).map(t => t.due_date))],
+    () => [...new Set(state.todos.filter(t => !t.recurrence).map(t => t.dueDate))],
     [state.todos],
   )
 
   return (
-    <TodoContext.Provider value={{ state, dispatch, filteredTodos, datesWithTodos, getTagIds }}>
+    <TodoContext.Provider value={{ state, dispatch, filteredTodos, datesWithTodos }}>
       {children}
     </TodoContext.Provider>
   )

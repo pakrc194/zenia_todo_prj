@@ -18,16 +18,16 @@ export function CalendarPanel() {
 
   // 반복 인스턴스 날짜 Set (캘린더 점 표시용)
   const recurringDates = new Set(
-    getInstancesForMonth(currentMonth).map(i => i.instance_date)
+    getInstancesForMonth(currentMonth).map(i => i.instanceDate)
   )
 
   // 이번 달 일반 todo + 반복 인스턴스
   const monthStr = format(currentMonth, 'yyyy-MM')
   const monthTodos = state.todos.filter(
-    t => !t.recurrence_id && t.due_date?.startsWith(monthStr)
+    t => !t.recurrenceId && t.dueDate?.startsWith(monthStr)
   )
   const monthRecurringInstances = getInstancesForMonth(currentMonth).filter(
-    i => i.instance_date.startsWith(monthStr)
+    i => i.instanceDate.startsWith(monthStr)
   )
 
   return (
@@ -84,10 +84,10 @@ export function CalendarPanel() {
         <p className={styles.summaryTitle}>이번 달 카테고리</p>
         <div className={styles.summaryList}>
           {state.categories.map(cat => {
-            const normalCnt = monthTodos.filter(t => t.category_id === cat.id).length
+            const normalCnt = monthTodos.filter(t => t.category?.id === cat.id).length
             const recurCnt  = new Set(
               monthRecurringInstances
-                .filter(i => i.category_id === cat.id)
+                .filter(i => i.category?.id === cat.id)
                 .map(i => i.id)
             ).size
             const cnt = normalCnt + recurCnt
@@ -116,15 +116,15 @@ export function CalendarPanel() {
         </div>
         <div className={styles.statBox}>
           <span className={styles.statNum} style={{ color: 'var(--color-green)' }}>
-            {monthTodos.filter(t => t.is_done).length +
-             monthRecurringInstances.filter(i => i.is_done).length}
+            {monthTodos.filter(t => t.isDone).length +
+             monthRecurringInstances.filter(i => i.isDone).length}
           </span>
           <span className={styles.statLabel}>완료</span>
         </div>
         <div className={styles.statBox}>
           <span className={styles.statNum} style={{ color: 'var(--color-orange)' }}>
-            {monthTodos.filter(t => !t.is_done).length +
-             monthRecurringInstances.filter(i => !i.is_done).length}
+            {monthTodos.filter(t => !t.isDone).length +
+             monthRecurringInstances.filter(i => !i.isDone).length}
           </span>
           <span className={styles.statLabel}>남음</span>
         </div>

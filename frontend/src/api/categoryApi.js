@@ -7,12 +7,12 @@
 
 import api from '@/lib/axios'
 
-const BASE = '/categories'
+const BASE = '/category'
 
 // ── 전체 조회 ─────────────────────────────────────────────
 /** @returns {Promise<Category[]>} */
 export const getCategories = () =>
-  api.get(BASE).then(r => r.data)
+  api.get(`${BASE}/list`).then(r => r.data)
 
 // ── 단건 조회 ─────────────────────────────────────────────
 /** @param {number} id */

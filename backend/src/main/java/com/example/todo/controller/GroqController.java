@@ -6,10 +6,13 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.todo.dto.TodoResponse;
+import com.example.todo.dto.ChatDto;
+import com.example.todo.dto.TodoDto;
 import com.example.todo.service.GroqService;
 import com.example.todo.service.TodoService;
 
@@ -26,15 +29,14 @@ public class GroqController {
     TodoService todoService;
     
 
-    @GetMapping("/ai/groq")
+    @PostMapping("/ai/groq")
     public String chat(
-        @RequestParam(name="message",defaultValue = "안녕!") String message
+        @RequestBody ChatDto dto
     ) {
     	LocalDate date = LocalDate.now();
-    	List<TodoResponse> todoRes= todoService.findByDateTodos(date);
-    	System.out.println(todoRes.toString());
-    	String res = groqService.chat(todoRes.toString()+"/"+message);
-    	System.out.println(message+" : "+ res);
+    	List<TodoDto> todoRes= todoService.findByDateTodos(date);
+    	String res = groqService.chat(todoRes.toString()+"/"+dto.getMessage());
+    	System.out.println(dto.getMessage()+" : "+ res);
     	
         return res;
     }
