@@ -3,6 +3,7 @@ import { useRecurringTodos } from '@/hooks/useRecurringTodos'
 import { Badge } from '@/components/ui/Badge'
 import { Trash2, Repeat, ChevronRight } from 'lucide-react'
 import styles from './TodoItem.module.css'
+import { useTodoApi } from '../../hooks/useTodoApi'
 
 const PRIORITY_COLOR = { high: '#FF3B30', medium: '#FF9500', low: '#34C759' }
 
@@ -15,11 +16,15 @@ export function TodoItem({ todo, onEdit, onEditRule }) {
   const todoTags    = todo.tags ?? []
   const isRecurring = !!todo.recurrence
 
+  const {checkDone} = useTodoApi()
+
   const toggle = (e) => {
     e.stopPropagation()
     if (todo._isRecurring) {
       toggleInstanceDone(todo.instanceKey)
     } else {
+      console.log(todo)
+      //checkDone(todo.id, todo.isDone)
       dispatch({ type: 'TOGGLE_DONE', payload: todo.id })
     }
   }
@@ -39,7 +44,7 @@ export function TodoItem({ todo, onEdit, onEditRule }) {
 
   return (
     <div
-      className={`${styles.item} ${todo.isDone ? styles.done : ''} ${todo._isRecurring ? styles.recurring : ''}`}
+      className={`${styles.item} ${todo.isDone ? styles.isDone : ''} ${todo._isRecurring ? styles.recurring : ''}`}
       onClick={handleClick}
     >
       <span className={styles.priorityStripe} style={{ '--stripe': PRIORITY_COLOR[todo.priority] }} />

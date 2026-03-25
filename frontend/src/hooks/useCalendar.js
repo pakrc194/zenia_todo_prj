@@ -15,7 +15,8 @@ export function useCalendar(initialDate = new Date()) {
     //console.log(reqDate)
     fetchTodos({
       date: reqDate
-    }).then(dd=>console.log("res",dd))
+    })
+    //.then(dd=>console.log("res",dd))
     
 
   }, [currentMonth])

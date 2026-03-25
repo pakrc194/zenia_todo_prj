@@ -21,7 +21,9 @@ public interface TodoRepository extends JpaRepository<Todo, Long>{
 			join fetch t.category 
 			join fetch t.todoTags tt
 			join fetch tt.tag
-			where Month(:date) = Month(t.dueDate)
+			where (Month(:date) = Month(t.dueDate)
+			and Year(:date) = Year(t.dueDate))
+			or (tr.endDate IS NULL or tr.endDate >= :date)
 			""")
 	List<Todo> findByMonthWithRecurrences(@Param("date") LocalDate date);
 	

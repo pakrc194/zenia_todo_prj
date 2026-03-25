@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.data.annotation.CreatedDate;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -42,6 +44,7 @@ public class Todo {
 	@Enumerated(EnumType.STRING)
 	Priority priority;
 	
+	@CreatedDate
 	LocalDateTime createdAt;
 	LocalDate dueDate;
 	
@@ -65,14 +68,30 @@ public class Todo {
 	            .toList();
 	}
 	
-	public void addTag(List<Tag> req) {
-		List<TodoTag> list = new ArrayList<>();
-		for(Tag tag : req) {
-			TodoTag todoTag = new TodoTag();
-			todoTag.setTodo(this);
-			todoTag.setTag(tag);
-			list.add(todoTag);
-		}
-		this.todoTags = new ArrayList<>(list);
+	public void setTags(List<Tag> reqTags) {
+		if (reqTags == null) {
+	        this.todoTags.clear();
+	        return;
+	    }
+
+	    // 1. 제거 대상 삭제: 요청에 없는 기존 태그들을 리스트에서 제거 (orphanRemoval에 의해 DB에서도 삭제됨)
+	    this.todoTags.removeIf(existingTodoTag -> 
+	        reqTags.stream().noneMatch(tag -> tag.getId().equals(existingTodoTag.getTag().getId()))
+	    );
+
+	    // 2. 신규 대상 추가: 기존에 없던 태그들만 새로운 TodoTag 객체로 만들어 추가
+	    for (Tag tag : reqTags) {
+	        boolean isAlreadyPresent = this.todoTags.stream()
+	            .anyMatch(existingTodoTag -> existingTodoTag.getTag().getId().equals(tag.getId()));
+
+	        if (!isAlreadyPresent) {
+	            TodoTag newTodoTag = new TodoTag();
+	            newTodoTag.setTodo(this);
+	            newTodoTag.setTag(tag);
+	            this.todoTags.add(newTodoTag);
+	        }
+	    }
 	}
+	
+	
 }

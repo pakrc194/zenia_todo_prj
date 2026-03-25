@@ -23,7 +23,7 @@ function TagModal({ isOpen, onClose, type, dispatch, categories }) {
     if (!name.trim()) return
     const req = { type: type === 'tag' ? 'ADD_TAG' : 'ADD_CATEGORY', payload: { name: name.trim(), color, createdAt: new Date().toISOString() } }
     console.log(req)
-    if(req.type ==="tag") {
+    if(req.type === 'ADD_TAG') {
       addTag(req.payload)
     } else {
       addCategory(req.payload)
@@ -37,8 +37,11 @@ function TagModal({ isOpen, onClose, type, dispatch, categories }) {
   const {fetchCategories, loadingMap:loadingCateMap} = useCategoryApi()
   
   useEffect(()=>{
-    fetchTags().then(res=>console.log("tag",res))
-    fetchCategories().then(res=>console.log("category",res))
+    fetchTags()
+    //.then(res=>console.log("tag",res))
+    
+    fetchCategories()
+    //.then(res=>console.log("category",res))
   },[])
 
   if(loadingTagMap.fetchTags || loadingCateMap.fetchCategories) return <>로딩중입니다..</>

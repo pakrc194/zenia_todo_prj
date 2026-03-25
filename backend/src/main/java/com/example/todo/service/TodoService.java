@@ -7,8 +7,10 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.todo.dto.RecurrenceDto;
 import com.example.todo.dto.TodoDto;
 import com.example.todo.entity.Category;
+import com.example.todo.entity.Priority;
 import com.example.todo.entity.Recurrence;
 import com.example.todo.entity.Tag;
 import com.example.todo.entity.Todo;
@@ -19,6 +21,7 @@ import com.example.todo.repository.TagRepository;
 import com.example.todo.repository.TodoRepository;
 import com.example.todo.repository.TodoTagsRepository;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -52,19 +55,41 @@ public class TodoService {
 	}
 	
 	@Transactional
-	public int save(TodoDto todo) {
+	public TodoDto save(TodoDto todo) {
 		Category cate = cateRepo.findById(todo.getCategoryId()).orElse(null);
-		
-		
-		
+
 		Todo entity = todo.toEntity(cate);
 		
 		List<Tag> tags = tagRepo.findAllById(todo.getTagIds());
-		entity.addTag(tags);
+		entity.setTags(tags);
 		entity.setCreatedAt(LocalDateTime.now());
 		System.out.println(entity);
-		todoRepo.save(entity);
 		
-		return 1;
+		return TodoDto.from(todoRepo.save(entity));
+	}
+	
+	@Transactional
+	public TodoDto patch(TodoDto todo) {
+		Todo entity = todoRepo.findById(todo.getId()).orElseThrow(()-> new EntityNotFoundException("Todo not found"));
+		Category category = cateRepo.getReferenceById(todo.getCategoryId());
+		List<Tag> tags = tagRepo.findAllById(todo.getTagIds());
+		entity.setTags(tags);
+		entity.setCategory(category);
+		entity.setTitle(todo.getTitle());
+		entity.setDescription(todo.getDescription());
+		entity.setDueDate(todo.getDueDate());
+		entity.setPriority(Priority.valueOf(todo.getPriority()));
+		entity.setRecurrence(todo.getRecurrence().toEntity());
+		
+		
+		return TodoDto.from(entity);
+	}
+	
+	@Transactional
+	public TodoDto isDone(TodoDto todo) {
+		Todo entity = todoRepo.findById(todo.getId()).orElseThrow(()-> new EntityNotFoundException("Todo not found"));
+		entity.setDone(todo.isDone());
+		
+		return TodoDto.from(entity);
 	}
 }

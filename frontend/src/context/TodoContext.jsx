@@ -30,7 +30,8 @@ function reducer(state, action) {
       return {
         ...state,
         todos: state.todos.map(t =>
-          t.id === action.payload.id
+          t.id === 
+          action.payload.id
             ? { ...t, ...action.payload, updatedAt: new Date().toISOString() }
             : t
         ),

@@ -61,7 +61,6 @@ public class TodoDto {
 				.recurrence(this.recurrence.toEntity())
 				.createdAt(this.createdAt)
 				.category(category)
-				
 				.build();
 	}
 }

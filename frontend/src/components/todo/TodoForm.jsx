@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
 import { PRIORITIES, RECURRENCE_TYPES, DAYS_OF_WEEK } from '@/lib/constants'
 import styles from './TodoForm.module.css'
-import { useTodoApi } from '../../hooks/useTodoApi'
+import { useCategoryApi, useTagApi, useTodoApi } from '../../hooks/useTodoApi'
 
 const DAY_NUM_TO_LABEL = { '1':'월','2':'화','3':'수','4':'목','5':'금','6':'토','7':'일' }
 
@@ -29,7 +29,10 @@ export function TodoForm({ isOpen, onClose, editTodo }) {
   const [form, setForm]       = useState(EMPTY)
   const [isDirty, setIsDirty] = useState(false)
 
-  const {addTodo} = useTodoApi()
+  const {addTodo, patchTodoField} = useTodoApi()
+  const {fetchTags} = useTagApi()
+  const {fetchCategories} = useCategoryApi()
+
 
   useEffect(() => {
     if (!isOpen) return
@@ -127,14 +130,14 @@ export function TodoForm({ isOpen, onClose, editTodo }) {
 
     if (editTodo) {
       // 수정: 백엔드 응답(조인 포함)으로 UPDATE_TODO
-      dispatch({ type: 'UPDATE_TODO', payload: { id: editTodo.id, ...payload } })
+      patchTodoField(editTodo.id, payload)
     } else {
       // 추가: 임시 id로 낙관적 추가 (백엔드 응답으로 교체됨)
       addTodo(payload)
     }
 
     setIsDirty(false)
-    //onClose()
+    onClose()
   }, [form, editTodo, state.todos, dispatch, onClose])
 
   const handleTitleKeyDown = useCallback((e) => {
