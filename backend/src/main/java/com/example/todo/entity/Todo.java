@@ -72,17 +72,26 @@ public class Todo {
 		if (reqTags == null) {
 	        this.todoTags.clear();
 	        return;
-	    }
+	    } 
+		
+		if(this.todoTags==null) {
+			this.todoTags = new ArrayList<>();
+		}
 
 	    // 1. 제거 대상 삭제: 요청에 없는 기존 태그들을 리스트에서 제거 (orphanRemoval에 의해 DB에서도 삭제됨)
-	    this.todoTags.removeIf(existingTodoTag -> 
-	        reqTags.stream().noneMatch(tag -> tag.getId().equals(existingTodoTag.getTag().getId()))
-	    );
+		if(this.todoTags!=null && this.todoTags.size()>0) {
+		    this.todoTags.removeIf(existingTodoTag -> 
+		        reqTags.stream().noneMatch(tag -> tag.getId().equals(existingTodoTag.getTag().getId()))
+		    );
+		}
 
 	    // 2. 신규 대상 추가: 기존에 없던 태그들만 새로운 TodoTag 객체로 만들어 추가
 	    for (Tag tag : reqTags) {
-	        boolean isAlreadyPresent = this.todoTags.stream()
-	            .anyMatch(existingTodoTag -> existingTodoTag.getTag().getId().equals(tag.getId()));
+	    	boolean isAlreadyPresent = false;
+	    	if(this.todoTags!=null && this.todoTags.size()>0) {
+	    		isAlreadyPresent = this.todoTags.stream()
+	    	            .anyMatch(existingTodoTag -> existingTodoTag.getTag().getId().equals(tag.getId()));
+	    	}
 
 	        if (!isAlreadyPresent) {
 	            TodoTag newTodoTag = new TodoTag();

@@ -58,9 +58,9 @@ public class TodoDto {
 				.priority(Priority.valueOf(this.priority))
 				.isDone(false)
 				.dueDate(this.dueDate)
-				.recurrence(this.recurrence.toEntity())
+				.recurrence(this.recurrence!=null?this.recurrence.toEntity():null)
 				.createdAt(this.createdAt)
-				.category(category)
+				.category(category!=null? category : null)
 				.build();
 	}
 }

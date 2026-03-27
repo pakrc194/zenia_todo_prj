@@ -56,7 +56,10 @@ public class TodoService {
 	
 	@Transactional
 	public TodoDto save(TodoDto todo) {
-		Category cate = cateRepo.findById(todo.getCategoryId()).orElse(null);
+		Category cate = null;
+		if(todo.getCategoryId()!=null) {
+			cate = cateRepo.findById(todo.getCategoryId()).orElse(null);
+		}
 
 		Todo entity = todo.toEntity(cate);
 		
